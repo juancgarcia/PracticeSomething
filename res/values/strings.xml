@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">PracticeSomething - CanvasActivity!</string>
+    <string name="app_name">PracticeSomething</string>
+    <string name="colorRedBtn">Red</string>
+    <string name="colorBlueBtn">Blue</string>
+    <string name="colorGreenBtn">Green</string>
+    <string name="colorUndoBtn">Undo</string>
+    <string name="colorRedoBtn">Redo</string>
+    <string name="colorSaveBtn">Save</string>
+    <string name="colorPathBtn">Path</string>
+    <string name="colorCircleBtn">Circle</string>
+    <string name="drawingActivityTitle">Drawing Activity</string>
+
+</resources>
