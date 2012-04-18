@@ -20,6 +20,7 @@ public class DrawingActivity extends Activity implements View.OnTouchListener, V
 //	private static final String TAG = "DrawingActivity";
 	private static final float thick = 9;
 	private static final float thin = 3;
+	private static final int colorRed = 0xFFFF0000, colorGreen = 0xFF00FF00, colorBlue = 0xFF0000FF;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -32,19 +33,34 @@ public class DrawingActivity extends Activity implements View.OnTouchListener, V
 	    
 	    currentBrush = new PenBrush();
 		
-		Button	red = (Button) findViewById(R.id.colorRedBtn),
-				blue = (Button) findViewById(R.id.colorBlueBtn),
-				green = (Button) findViewById(R.id.colorGreenBtn);
-		
-		red.setOnClickListener(this); blue.setOnClickListener(this); green.setOnClickListener(this);
-		
+		setButtonListeners();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		drawingSurface.pause();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		drawingSurface.resume();
+	}
+	
+	private void setButtonListeners(){
+		((Button) findViewById(R.id.colorRedBtn)).setOnClickListener(this);
+		((Button) findViewById(R.id.colorBlueBtn)).setOnClickListener(this);
+		((Button) findViewById(R.id.colorGreenBtn)).setOnClickListener(this);
+		((Button) findViewById(R.id.undoBtn)).setOnClickListener(this);
+		((Button) findViewById(R.id.redoBtn)).setOnClickListener(this);
 	}
 
 	private Paint getCurrentPaint(){
 		if(currentPaint == null){
 			currentPaint = new Paint();
 			currentPaint.setDither(true);
-			currentPaint.setColor(0xFFFFFF00);
+			currentPaint.setColor(colorGreen);
 			currentPaint.setStyle(Paint.Style.STROKE);
 			currentPaint.setStrokeJoin(Paint.Join.ROUND);
 			currentPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -71,17 +87,18 @@ public class DrawingActivity extends Activity implements View.OnTouchListener, V
 	public boolean onTouch(View view, MotionEvent motionEvent) {
 		switch(motionEvent.getAction()){
 			case MotionEvent.ACTION_DOWN:
-				drawingSurface.previewPath.start();
+				drawingSurface.previewPath.addAction();
 				currentBrush.mouseDown(drawingSurface.previewPath.path, motionEvent.getX(), motionEvent.getY());				
 				break;
 				
 			case MotionEvent.ACTION_MOVE:
+				drawingSurface.previewPath.addAction();
 				currentBrush.mouseMove(drawingSurface.previewPath.path, motionEvent.getX(), motionEvent.getY());				
 				break;
 				
 			case MotionEvent.ACTION_UP:				
 				currentBrush.mouseUp(drawingSurface.previewPath.path, motionEvent.getX(), motionEvent.getY());
-				drawingSurface.previewPath.end();
+				drawingSurface.previewPath.finish();
 				
 				currentDrawingPath = getCurrentDrawingPath(drawingSurface.previewPath.path);
 				drawingSurface.addDrawingPath(currentDrawingPath);				
@@ -92,22 +109,22 @@ public class DrawingActivity extends Activity implements View.OnTouchListener, V
 				
 			default:
 		}		
-		return true;
+		return true; //allows onTouch to continue looping and reporting x,y on drag events
 	}
 
 	public void onClick(View view){
 		switch (view.getId()){
 		case R.id.colorRedBtn:
 			currentPaint = getCurrentPaint();
-			currentPaint.setColor(0xFFFF0000);
+			currentPaint.setColor(colorRed);
 			break;
 		case R.id.colorGreenBtn:
 			currentPaint = getCurrentPaint();
-			currentPaint.setColor(0xFF00FF00);
+			currentPaint.setColor(colorGreen);
 			break;
 		case R.id.colorBlueBtn:
 			currentPaint = getCurrentPaint();
-			currentPaint.setColor(0xFF0000FF);
+			currentPaint.setColor(colorBlue);
 			break;
 		case R.id.circleBtn:
 			currentPaint = getCurrentPaint();
@@ -116,6 +133,17 @@ public class DrawingActivity extends Activity implements View.OnTouchListener, V
 		case R.id.pathBtn:
 			currentPaint = getCurrentPaint();
 			currentPaint.setStrokeWidth(thin);
+			break;
+		case R.id.undoBtn:
+			drawingSurface.commandManager.undo();
+			//disable undo
+			view.setEnabled(drawingSurface.hasMoreUndo());	
+			((Button) findViewById(R.id.redoBtn)).setEnabled(true);
+			break;
+		case R.id.redoBtn:
+			drawingSurface.commandManager.redo();
+			view.setEnabled(drawingSurface.hasMoreRedo());			
+			((Button) findViewById(R.id.undoBtn)).setEnabled(true);
 			break;
 		}
 	}

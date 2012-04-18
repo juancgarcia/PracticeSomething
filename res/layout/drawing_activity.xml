@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/RelativeLayout"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawingActivityWindowFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical" >        
+
+    <com.dastardlylabs.artsy.brushStrokes.DrawingSurface
+        android:id="@+id/drawingSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/LinearLayoutActions"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_gravity="top" >
 
         <Button
             android:id="@+id/undoBtn"
@@ -31,20 +37,12 @@
             android:onClick="onClick"
             android:text="@string/colorSaveBtn" />
     </LinearLayout>
-
-    <com.dastardlylabs.artsy.brushStrokes.DrawingSurface
-        android:id="@+id/drawingSurface"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/LinearLayoutPalette"
-        android:layout_below="@+id/LinearLayoutActions" />
-
+
     <LinearLayout
         android:id="@+id/LinearLayoutPalette"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
+        android:layout_gravity="bottom" >
 
         <Button
             android:id="@+id/colorRedBtn"
@@ -83,5 +81,9 @@
             android:onClick="onClick"
             android:text="@string/colorPathBtn" />
     </LinearLayout>
+    
+    <include layout="@layout/color_palatte_drawer"/>
+    <!-- 
+    	android:layout_width="fill_parent" -->
 
-</RelativeLayout>
+</FrameLayout>
